@@ -1,12 +1,12 @@
 # Spotify Script
 ## What can it do?
 * Create and update Spotify playlists using the playlist title and genre
-* Update the playlist with unique tracks that have not been added before (within the past 3 months) and no duplicate artists
+* Update the playlist with unique tracks that have not been added (or after 3 months since it was added) and no duplicate artists
 ## Other Features
+* View tracks that have been previously added as JSON
 * Configure how long to wait before allowing previous tracks to be added to your playlists
-* View tracks that have been previously as JSON
 * Specify which artist shouldn't be added to your playlists
-* Configure your Spotify API credentials and playlist info
+* Configure your Spotify API credentials and playlist details
 ## How does it work?
 * Clone and navigate to the project repo
 * Enter your Spotify API credentials and username (can be found on your Spotify profile). Instructions for API credentials can be found [here](https://developer.spotify.com/documentation/web-api)
