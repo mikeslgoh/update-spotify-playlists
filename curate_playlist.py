@@ -101,9 +101,12 @@ def is_track_unique(artists_set, artists):
 def has_track_been_added_before(new_track, previous_tracks):
 	for prev_track in previous_tracks:
 		if new_track['id'] is prev_track['id'] and \
-			abs((datetime.fromisoformat(prev_track['date_added']) - datetime.today()).days) > previous_track_added_date_threshold * previous_track_added_date_units.value:
-			return True
+			track_past_time_threshold(prev_track):
+				return True
 	return False
+
+def track_past_time_threshold(prev_track):
+    return abs((datetime.fromisoformat(prev_track['date_added']) - datetime.today()).days) > previous_track_added_date_threshold * previous_track_added_date_units.value
 
 # Filter tracks to keep only those with unique artists and have not been in the playlist for X amount of time
 def get_unique_tracks(genre, playlist_id):
@@ -138,9 +141,31 @@ def create_playlists(playlists):
 	for playlist in playlists:
 		create_playlist(playlist['genre'], playlist['title'])
 
+# Remove tracks that are older than the threshold so they can be added in the playlist again
+def remove_tracks_past_threshold(user_playlists):
+	playlists = sp.current_user_playlists()
+	playlist_ids = []
+	for item in playlists['items']:
+		if item['name'] in [playlist['name'] for playlist in user_playlists]:
+			playlist_ids.append(item['id'])
+	for ids in playlist_ids:
+		json_file = f'{ids}_playlist_tracks.json'
+		try:
+			with open(json_file, 'r') as file:
+				previous_tracks = json.load(file)
+			for prev_track in previous_tracks:
+				if track_past_time_threshold(prev_track=prev_track):
+					previous_tracks.remove(prev_track)
+			with open(json_file, 'w') as file:
+				json.dump(previous_tracks, file, indent=4)
+		except (json.JSONDecodeError, FileNotFoundError):
+			return
+
 def main():
+	playlists = get_playlists()
 	setup_spotify_credentials()
-	create_playlists(get_playlists())
+	create_playlists(playlists)
+	remove_tracks_past_threshold(playlists)
 
 if __name__ == "__main__":
     main()
